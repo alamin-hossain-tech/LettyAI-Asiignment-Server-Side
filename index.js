@@ -22,11 +22,26 @@ async function run() {
   try {
     const formCollection = client.db("formCollection").collection("data");
 
+    // post data to DB
     app.post("/add", async (req, res) => {
       const data = req.body;
-
       const result = await formCollection.insertOne(data);
       res.send(result);
+    });
+
+    // get all data list from DB
+    app.get("/data", async (req, res) => {
+      const query = {};
+      const cursor = formCollection.find(query);
+      const data = await cursor.toArray();
+      res.send(data);
+    });
+    // get all data by Id from DB
+    app.get("/data/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const cursor = await formCollection.findOne(query);
+      res.send(cursor);
     });
   } finally {
   }
